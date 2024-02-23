@@ -22,6 +22,24 @@ class OpenAICompletionProvider(CompletionProvider):
             kwargs["top_p"] = args["top_p"]
 
         if stream:
+from gptcli.vision import VisionAPIHandler
+
+        self.vision_handler = VisionAPIHandler(api_key=openai.api_key)
+        if input_type == "image":
+            if "image_path" in args:
+                try:
+                    response = await self.vision_handler.recognize_image(image_path=args["image_path"])
+                    yield decode_response_to_text(response)
+                except Exception as e:
+                    yield f"Error recognizing image: {e}"
+            elif "prompt" in args:
+                try:
+                    response = await self.vision_handler.generate_image(prompt=args["prompt"], n_images=args.get("n_images", 1))
+                    for image_data in response["data"]:
+                        yield f"Generated Image URL: {image_data['url']}"
+                except Exception as e:
+                    yield f"Error generating image: {e}"
+        elif input_type == "text" and stream:
             response_iter = self.client.chat.completions.create(
                 messages=cast(List[ChatCompletionMessageParam], messages),
                 stream=True,
@@ -62,3 +80,4 @@ def num_tokens_from_messages_openai(messages: List[Message], model: str) -> int:
 
 def num_tokens_from_completion_openai(completion: Message, model: str) -> int:
     return num_tokens_from_messages_openai([completion], model)
+from gptcli.vision import decode_response_to_text
