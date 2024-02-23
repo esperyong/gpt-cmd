@@ -44,3 +44,5 @@ def read_yaml_config(file_path: str) -> GptCliConfig:
         return GptCliConfig(
             **config,
         )
+    dalle_api_key: Optional[str] = os.environ.get("DALLE_API_KEY")
+    gpt4_vision_api_key: Optional[str] = os.environ.get("GPT4_VISION_API_KEY")
