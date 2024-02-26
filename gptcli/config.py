@@ -44,3 +44,5 @@ def read_yaml_config(file_path: str) -> GptCliConfig:
         return GptCliConfig(
             **config,
         )
+    vision_api_key: Optional[str] = os.environ.get("VISION_API_KEY")
+    image_generation_api_key: Optional[str] = os.environ.get("IMAGE_GENERATION_API_KEY")
