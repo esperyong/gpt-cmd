@@ -86,6 +86,18 @@ def parse_args(config: GptCliConfig):
     )
     parser.add_argument(
         "--top_p",
+    parser.add_argument(
+        "--image_url",
+        type=str,
+        default=None,
+        help="URL of the image for recognition. The description of the recognized image will be used as part of the chat prompt.",
+    )
+    parser.add_argument(
+        "--generate_image",
+        type=str,
+        default=None,
+        help="Prompt for generating an image. The URL of the generated image will be printed.",
+    )
         type=float,
         default=None,
         help="The top_p to use for the chat session. Overrides the default top_p defined for the assistant.",
@@ -189,12 +201,34 @@ def main():
 
     assistant = init_assistant(cast(AssistantGlobalArgs, args), config.assistants)
 
-    if args.prompt is not None:
-        run_non_interactive(args, assistant)
-    elif args.execute is not None:
-        run_execute(args, assistant)
+    if args.image_url is not None:
+        from gptcli.vision import recognize_image
+        try:
+            image_description = recognize_image(args.image_url)
+            print(f"Recognized image description: {image_description}")
+            if args.prompt:
+                args.prompt.append(image_description)
+            else:
+                args.prompt = [image_description]
+            run_non_interactive(args, assistant)
+        except Exception as e:
+            print(f"Error recognizing image: {e}")
+            sys.exit(1)
+    elif args.generate_image is not None:
+        from gptcli.vision import generate_image
+        try:
+            image_url = generate_image(args.generate_image)
+            print(f"Generated image URL: {image_url}")
+        except Exception as e:
+            print(f"Error generating image: {e}")
+            sys.exit(1)
     else:
-        run_interactive(args, assistant)
+        if args.prompt is not None:
+            run_non_interactive(args, assistant)
+        elif args.execute is not None:
+            run_execute(args, assistant)
+        else:
+            run_interactive(args, assistant)
 
 
 def run_execute(args, assistant):
