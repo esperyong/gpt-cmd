@@ -44,3 +44,5 @@ def read_yaml_config(file_path: str) -> GptCliConfig:
         return GptCliConfig(
             **config,
         )
+    openai_image_api_key: Optional[str] = os.environ.get("OPENAI_IMAGE_API_KEY")
+    image_model: str = "dalle"

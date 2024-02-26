@@ -25,7 +25,7 @@ This install assumes a Linux/OSX machine with Python and pip available.
 pip install gpt-command-line
 ```
 
-Install latest version from source:
+Install latest version from source, including the Pillow library for image processing:
 ```bash
 pip install git+https://github.com/kharvd/gpt-cli.git
 ```
@@ -59,8 +59,9 @@ Make sure to set the `OPENAI_API_KEY` environment variable to your OpenAI API ke
 
 ```
 usage: gpt [-h] [--no_markdown] [--model MODEL] [--temperature TEMPERATURE] [--top_p TOP_P]
+pip install Pillow
               [--log_file LOG_FILE] [--log_level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
-              [--prompt PROMPT] [--execute EXECUTE] [--no_stream]
+              [--prompt PROMPT] [--execute EXECUTE] [--no_stream] [--image_recognition FILE] [--image_generation PROMPT]
               [{dev,general,bash}]
 
 Run a chat session with ChatGPT. See https://github.com/kharvd/gpt-cli for more information.
@@ -94,6 +95,19 @@ optional arguments:
                         If specified, passes the prompt to the assistant and allows the user to
                         edit the produced shell command before executing it. Implies --no_stream.
                         Use `-` to read the prompt from standard input.
+              
+For image recognition:
+```
+gpt --image_recognition path/to/image.jpg
+```
+This command will perform image recognition on the specified image file and return the recognized text.
+
+For image generation:
+```
+gpt --image_generation "A futuristic cityscape"
+```
+This command will generate an image based on the provided prompt and save it locally.
+```
   --no_stream           If specified, will not stream the response to standard output. This is
                         useful if you want to use the response in a script. Ignored when the
                         --prompt option is not specified.
